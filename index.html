@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Joaquin Ruby — Operations and AI automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#EEF2F1; --surface:#FFFFFF; --ink:#14211F; --muted:#4A5B58; --line:#CBD6D3;
+  --accent:#0F6B63; --flag:#B4400C; --flag-bg:#FBE9DD; --ok:#0F6B63;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0E1615; --surface:#162221; --ink:#E6EEEC; --muted:#A3B5B1; --line:#2A3B39; --accent:#4FD1C0; --flag:#FDA46A; --flag-bg:#3A2418; --ok:#4FD1C0;}
+}
+:root[data-theme="dark"]{--bg:#0E1615; --surface:#162221; --ink:#E6EEEC; --muted:#A3B5B1; --line:#2A3B39; --accent:#4FD1C0; --flag:#FDA46A; --flag-bg:#3A2418; --ok:#4FD1C0;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.6;}
+a{color:var(--accent);text-underline-offset:3px;}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px;}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 0;}
+.name{font-weight:600;font-size:18px;}
+nav{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}
+nav a.l{color:var(--ink);text-decoration:none;font-size:15px;}
+nav a.l:hover{color:var(--accent);}
+.btn{display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:500;padding:10px 18px;border-radius:6px;}
+.btn:hover{background:var(--accent);color:var(--bg);}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;padding:48px 0 64px;}
+h1{font-size:clamp(34px,5.2vw,56px);line-height:1.08;margin:0 0 20px;font-weight:600;letter-spacing:-.02em;}
+.lede{font-size:19px;color:var(--muted);max-width:34em;margin:0 0 28px;}
+.cta{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;margin:28px 0 0;padding:0;list-style:none;color:var(--muted);font-size:15px;}
+.demo{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;}
+.demo h2{font-size:16px;font-weight:600;margin:0 0 4px;}
+.demo .sub{font-size:14px;color:var(--muted);margin:0 0 12px;}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);white-space:nowrap;}
+th{color:var(--muted);font-weight:500;}
+td input{width:100%;min-width:92px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:5px 6px;}
+tr.bad td{background:var(--flag-bg);color:var(--flag);font-weight:500;}
+tr.bad td input{border-color:var(--flag);}
+.res{font-weight:500;color:var(--ok);}
+tr.bad .res{color:var(--flag);}
+#sum{font-size:14px;margin:12px 0 0;min-height:1.4em;}
+.demo .note{font-size:13px;color:var(--muted);margin:6px 0 0;}
+section{padding:44px 0;border-top:1px solid var(--line);}
+section>.wrap>h2{font-size:26px;margin:0 0 20px;letter-spacing:-.01em;}
+.about p{max-width:40em;margin:0 0 14px;}
+details{border-top:1px solid var(--line);padding:6px 0;}
+details:first-of-type{border-top:0;}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:14px 0;font-size:19px;font-weight:600;}
+summary::-webkit-details-marker{display:none;}
+summary::after{content:"+";font-weight:400;color:var(--muted);font-size:22px;}
+details[open] summary::after{content:"\2212";}
+.st{font-size:14px;font-weight:500;white-space:nowrap;}
+.st.live{color:var(--accent);} .st.plan{color:var(--muted);}
+.cs{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:4px 0 18px;max-width:900px;}
+.cs h4{margin:0 0 4px;font-size:15px;}
+.cs p{margin:0;color:var(--muted);font-size:16px;}
+.meta{padding:0 0 16px;font-size:15px;color:var(--muted);}
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;}
+.skills h3{font-size:16px;margin:0 0 6px;}
+.skills p{margin:0;color:var(--muted);}
+.job{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line);}
+.job:first-of-type{border-top:0;}
+.job span:last-child{color:var(--muted);}
+.repos{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.repo{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px;}
+.repo a{font-weight:600;}
+.repo p{margin:4px 0 6px;color:var(--muted);font-size:15px;}
+.repo small{color:var(--muted);}
+footer{padding:32px 0 48px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);}
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;gap:32px;padding:28px 0 44px;}
+  .cs{grid-template-columns:1fr;}
+  nav a.l{display:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="name">Joaquin Ruby</span>
+    <nav>
+      <a class="l" href="#work">Projects</a>
+      <a class="l" href="#about">About</a>
+      <a class="l" href="blog.html">Blog</a>
+      <a class="btn gh" href="#">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div>
+        <h1>I turn operations busywork into tools that run themselves.</h1>
+        <p class="lede">I’ve worked the front line of banking and wealth operations, so I know where the process breaks. Now I use AI, Python, and SQL to fix it.</p>
+        <div class="cta">
+          <a class="btn gh" href="#">See my code on GitHub</a>
+          <a href="mailto:rubyjoaquin@gmail.com">rubyjoaquin@gmail.com</a>
+        </div>
+        <ul class="facts">
+          <li>Boise, ID</li>
+          <li>Open to fintech roles on the coast</li>
+          <li>Settled up to 150 trades a day</li>
+        </ul>
+      </div>
+      <div class="demo">
+        <h2>Try it: do two platforms agree?</h2>
+        <p class="sub">Edit any value. The check updates as you type.</p>
+        <div class="tw">
+          <table>
+            <thead><tr><th>Field</th><th>Platform A</th><th>Platform B</th><th>Result</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p id="sum" aria-live="polite"></p>
+        <p class="note">Made-up numbers. Real client data never appears on this site.</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<section class="about" id="about"><div class="wrap">
+  <h2>About</h2>
+  <p>I started as a personal banker at Wells Fargo and BMO, moved into wealth management operations at Idaho Trust, and now work in investment operations at Ancorato Capital and Blue Sky Tax Advisors.</p>
+  <p>At Ancorato I use AI to turn daily operating steps into documented procedures and build small tools for reporting and automation. I’m aiming at product, product operations, and automation roles in fintech, and I’m planning a Master of Science in Artificial Intelligence to go deeper.</p>
+</div></section>
+
+<section id="work"><div class="wrap">
+  <h2>Projects</h2>
+  <div id="projects"></div>
+</div></section>
+
+<section id="repos" hidden><div class="wrap">
+  <h2>Latest on GitHub</h2>
+  <div class="repos" id="repolist"></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>What I work with</h2>
+  <div class="skills">
+    <div><h3>Build</h3><p>Python, SQL, AI tools and workflow automation, PDF and data extraction</p></div>
+    <div><h3>Operations</h3><p>Trade settlement, ACAT transfers, NIGO resolution, exception triage, account onboarding</p></div>
+    <div><h3>Platforms</h3><p>Salesforce, Morningstar, Envestnet, Nitrogen, YCharts, Fidelity WealthScape, BNY Mellon NEXEN</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Experience</h2>
+  <div class="job"><span><strong>Investment Operations Assistant</strong>, Ancorato Capital</span><span>Oct 2026 – present, part-time</span></div>
+  <div class="job"><span><strong>Operations Associate</strong>, Blue Sky Tax Advisors</span><span>Nov 2026 – present, part-time</span></div>
+  <div class="job"><span><strong>Wealth Management Operations Associate</strong>, Idaho Trust Company</span><span>Apr 2026 – Sep 2026</span></div>
+  <div class="job"><span><strong>Personal Banker</strong>, Wells Fargo / <strong>Retail Relationship Banker</strong>, BMO</span><span>Dec 2024 – Apr 2026</span></div>
+</div></section>
+
+<footer><div class="wrap">
+  Read the <a href="blog.html">blog</a>. Want to talk? <a href="mailto:rubyjoaquin@gmail.com">Email me</a> or <a class="gh" href="#">browse my GitHub</a>.
+</div></footer>
+
+<script>
+// Edit these as you go. Push new repos to GitHub and they appear under "Latest on GitHub" once this page is hosted on GitHub Pages.
+var GITHUB_USER = "YOUR-USERNAME";
+var PROJECTS = [
+  { title: "AI-automated SOPs and internal tools", where: "Ancorato Capital", status: "Live (employer-internal)", state: "live",
+    problem: "Daily operating steps lived in people’s heads, which made work slower and easier to get wrong.",
+    built: "AI-assisted standard operating procedures, plus Python and SQL tools that support reporting and automation.",
+    result: "Routine work that’s faster, more accurate, and easy for the team to repeat.",
+    stack: "Python, SQL, AI tools. Built for an employer, so the code is private.", repo: "" },
+  { title: "Structured note term-sheet checker", where: "Portfolio project", status: "Planned", state: "plan",
+    problem: "Auditing note terms against a database by hand is slow and misses typos.",
+    built: "A script that reads key terms from term-sheet PDFs with an AI model and flags anything that doesn’t match.",
+    result: "To be measured: audit time per note and mismatches caught. Built on sample data.",
+    stack: "Python, SQL, AI, PDF extraction", repo: "" },
+  { title: "Cross-platform reporting reconciliation", where: "Portfolio project", status: "Planned", state: "plan",
+    problem: "Reports pull from several platforms that don’t always agree.",
+    built: "A tool that compares exports and flags differences above a threshold before reports go out.",
+    result: "To be measured: hours saved per reporting cycle.", stack: "Python, pandas", repo: "" },
+  { title: "Exception triage assistant", where: "Portfolio project", status: "Planned", state: "plan",
+    problem: "Trade and compliance exceptions get sorted and assigned by hand.",
+    built: "A tool that classifies exceptions and suggests the right owner. A person makes the final call.",
+    result: "To be measured: time to assign and tickets sent to the wrong person.", stack: "Python, AI", repo: "" },
+  { title: "Client document tracker", where: "Portfolio project", status: "Planned", state: "plan",
+    problem: "Chasing missing client documents takes time away from the real work.",
+    built: "A tracker that shows what’s missing per client and drafts reminder emails.",
+    result: "To be measured: days to complete a client file.", stack: "Python, SQL", repo: "" }
+];
+var DEMO = [["Coupon","7.25%","7.25%"],["Barrier","70%","65%"],["Maturity","2028-03-15","2028-03-15"]];
+
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text !== undefined) e.textContent = text; return e; }
+var ghUrl = (GITHUB_USER && GITHUB_USER !== "YOUR-USERNAME") ? "https://github.com/" + GITHUB_USER : "https://github.com/";
+Array.prototype.forEach.call(document.querySelectorAll("a.gh"), function(a){ a.href = ghUrl; a.target = "_blank"; a.rel = "noopener"; });
+
+// Interactive check
+var tb = document.getElementById("rows"), sum = document.getElementById("sum"), rowEls = [];
+function check(){
+  var bad = 0;
+  rowEls.forEach(function(r){
+    var same = r.a.value.trim().toLowerCase() === r.b.value.trim().toLowerCase();
+    r.tr.className = same ? "" : "bad"; r.res.textContent = same ? "match" : "flagged"; if(!same) bad++;
+  });
+  sum.textContent = bad === 0 ? "All fields match." : bad + (bad === 1 ? " mismatch flagged for review." : " mismatches flagged for review.");
+}
+DEMO.forEach(function(d){
+  var tr = el("tr"), a = el("input"), b = el("input"), res = el("span","res");
+  a.value = d[1]; b.value = d[2]; a.setAttribute("aria-label", d[0] + ", platform A"); b.setAttribute("aria-label", d[0] + ", platform B");
+  a.addEventListener("input", check); b.addEventListener("input", check);
+  var c1 = el("td", "", d[0]), c2 = el("td"), c3 = el("td"), c4 = el("td");
+  c2.appendChild(a); c3.appendChild(b); c4.appendChild(res);
+  [c1,c2,c3,c4].forEach(function(c){ tr.appendChild(c); }); tb.appendChild(tr);
+  rowEls.push({tr:tr, a:a, b:b, res:res});
+});
+check();
+
+// Projects
+var root = document.getElementById("projects");
+PROJECTS.forEach(function(p, i){
+  var d = el("details"); if(i === 0) d.open = true;
+  var s = el("summary"); s.appendChild(el("span","", p.title + " (" + p.where + ")")); s.appendChild(el("span","st " + p.state, p.status));
+  d.appendChild(s);
+  var cs = el("div","cs");
+  [["Problem",p.problem],["What I built",p.built],["Result",p.result]].forEach(function(x){
+    var c = el("div"); c.appendChild(el("h4","",x[0])); c.appendChild(el("p","",x[1])); cs.appendChild(c);
+  });
+  d.appendChild(cs);
+  var m = el("div","meta", "Stack: " + p.stack + " ");
+  if(p.repo){ var a = el("a","", "View code"); a.href = p.repo; a.target = "_blank"; a.rel = "noopener"; m.appendChild(a); }
+  d.appendChild(m); root.appendChild(d);
+});
+
+// Auto-list public repos (works when hosted somewhere that allows requests to api.github.com, such as GitHub Pages)
+if (GITHUB_USER && GITHUB_USER !== "YOUR-USERNAME" && /^https?:/.test(location.protocol)) {
+  try {
+    fetch("https://api.github.com/users/" + encodeURIComponent(GITHUB_USER) + "/repos?sort=updated&per_page=6")
+      .then(function(r){ return r.ok ? r.json() : []; })
+      .then(function(list){
+        list = (list || []).filter(function(r){ return !r.fork; });
+        if(!list.length) return;
+        var box = document.getElementById("repolist");
+        list.forEach(function(r){
+          var c = el("div","repo"), a = el("a","", r.name); a.href = r.html_url; a.target = "_blank"; a.rel = "noopener";
+          c.appendChild(a); c.appendChild(el("p","", r.description || "No description yet."));
+          c.appendChild(el("small","", r.language || ""));
+          box.appendChild(c);
+        });
+        document.getElementById("repos").hidden = false;
+      }).catch(function(){});
+  } catch(e) {}
+}
+</script>
+</body>
+</html>

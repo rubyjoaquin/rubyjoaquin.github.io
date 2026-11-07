@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Blog — Joaquin Ruby</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#EEF2F1;--surface:#FFFFFF;--ink:#14211F;--muted:#4A5B58;--line:#CBD6D3;--accent:#0F6B63;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1615;--surface:#162221;--ink:#E6EEEC;--muted:#A3B5B1;--line:#2A3B39;--accent:#4FD1C0;}}
+:root[data-theme="dark"]{--bg:#0E1615;--surface:#162221;--ink:#E6EEEC;--muted:#A3B5B1;--line:#2A3B39;--accent:#4FD1C0;}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:17px;line-height:1.65;}
+a{color:var(--accent);text-underline-offset:3px;}
+a:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px;}
+.wrap{max-width:720px;margin:0 auto;padding:0 24px;}
+header{display:flex;justify-content:space-between;align-items:center;padding:22px 0;}
+header a{color:var(--ink);text-decoration:none;font-weight:600;}
+h1{font-size:clamp(32px,5vw,44px);letter-spacing:-.02em;margin:24px 0 8px;}
+.sub{color:var(--muted);margin:0 0 28px;}
+details{border-top:1px solid var(--line);padding:6px 0;}
+summary{cursor:pointer;list-style:none;padding:14px 0;}
+summary::-webkit-details-marker{display:none;}
+.t{display:block;font-size:21px;font-weight:600;}
+.d{display:block;font-size:14px;color:var(--muted);margin-top:2px;}
+.s{display:block;color:var(--muted);margin-top:6px;}
+.body p{margin:0 0 16px;}
+.empty{color:var(--muted);}
+footer{padding:32px 0 48px;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:24px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><a href="index.html">Joaquin Ruby</a><a href="index.html#work">Projects</a></header>
+  <main>
+    <h1>Blog</h1>
+    <p class="sub">Notes on automation, operations, and what I’m building.</p>
+    <div id="posts"></div>
+  </main>
+  <footer><a href="index.html">Back to portfolio</a></footer>
+</div>
+<script src="posts.js"></script>
+<script>
+function el(tag, cls, text){ var e = document.createElement(tag); if(cls) e.className = cls; if(text !== undefined) e.textContent = text; return e; }
+var root = document.getElementById("posts");
+var list = (typeof POSTS !== "undefined" ? POSTS : []).slice().sort(function(a,b){ return a.date < b.date ? 1 : -1; });
+if(!list.length){ root.appendChild(el("p","empty","No posts yet. Check back soon.")); }
+list.forEach(function(p, i){
+  var d = el("details"); if(i === 0) d.open = true;
+  var s = el("summary");
+  s.appendChild(el("span","t",p.title));
+  var dt = new Date(p.date + "T12:00:00");
+  s.appendChild(el("span","d", isNaN(dt) ? p.date : dt.toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"})));
+  if(p.summary) s.appendChild(el("span","s",p.summary));
+  d.appendChild(s);
+  var b = el("div","body");
+  String(p.body || "").split(/\n\s*\n/).forEach(function(para){ if(para.trim()) b.appendChild(el("p","",para.trim())); });
+  d.appendChild(b); root.appendChild(d);
+});
+</script>
+</body>
+</html>
