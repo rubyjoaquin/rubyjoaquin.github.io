@@ -92,6 +92,18 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
   nav .btn{padding:7px 12px;}
   iframe#dash{height:640px;}
 }
+
+/* ---------- Experience windows ---------- */
+.xp{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;}
+.xc{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;min-height:190px;padding:22px;background:var(--surface);border:1px solid var(--line);border-radius:12px;color:var(--ink);text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,.04);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;}
+.xc:hover,.xc:focus-visible{transform:translateY(-8px);border-color:var(--accent);box-shadow:0 16px 28px rgba(15,26,38,.16);}
+.xr{font-size:19px;font-weight:600;line-height:1.3;}
+.xo{color:var(--accent);font-weight:500;}
+.xd{color:var(--muted);font-size:15px;}
+.xgo{position:absolute;top:16px;right:18px;font-size:20px;color:var(--muted);transition:color .22s ease;}
+.xc:hover .xgo{color:var(--accent);}
+@media (prefers-reduced-motion:reduce){.xc{transition:none;}.xc:hover,.xc:focus-visible{transform:none;}}
+@media (max-width:520px){.xp{gap:12px;}.xc{min-height:160px;padding:16px;}.xr{font-size:16px;}}
 </style>
 </head>
 <body>
@@ -99,8 +111,9 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
   <header>
     <span class="name">Joaquin Ruby</span>
     <nav>
-      <a class="l" href="#work">Projects</a>
+      <a class="l" href="#experience">Experience</a>
       <a class="l" href="#about">About</a>
+      <a class="l" href="#work">Projects</a>
       <a class="l" href="https://rubyjoaquin.github.io/blog.html">Blog</a>
       <a class="btn" href="https://github.com/rubyjoaquin" target="_blank" rel="noopener">GitHub</a>
     </nav>
@@ -118,7 +131,6 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
         </div>
         <ul class="facts">
           <li>Boise, ID</li>
-          <li>Open to fintech roles in SF or Seattle</li>
           <li>Settled up to 150 trades a day</li>
         </ul>
       </div>
@@ -138,10 +150,20 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
   </main>
 </div>
 
+<section id="experience"><div class="wrap">
+  <h2>Experience</h2>
+  <div class="xp">
+    <a class="xc" href="https://www.legacywealthmg.com/" target="_blank" rel="noopener"><span class="xr">Investment Operations Assistant</span><span class="xo">Ancorato Capital</span><span class="xd">Oct 2026 – present · part-time</span><span class="xgo" aria-hidden="true">↗</span></a>
+    <a class="xc" href="https://www.legacywealthmg.com/" target="_blank" rel="noopener"><span class="xr">Operations Associate</span><span class="xo">Blue Sky Tax Advisors</span><span class="xd">Nov 2026 – present · part-time</span><span class="xgo" aria-hidden="true">↗</span></a>
+    <div class="xc" tabindex="0"><span class="xr">Wealth Management Operations Associate</span><span class="xo">Idaho Trust Company</span><span class="xd">Apr 2026 – Sep 2026</span></div>
+    <div class="xc" tabindex="0"><span class="xr">Personal Banker / Retail Relationship Banker</span><span class="xo">Wells Fargo / BMO</span><span class="xd">Dec 2024 – Apr 2026</span></div>
+  </div>
+</div></section>
+
 <section class="about" id="about"><div class="wrap">
   <h2>About</h2>
   <p>I started as a personal banker at Wells Fargo and BMO, moved into wealth management operations at Idaho Trust, and now work in investment operations at Ancorato Capital and Blue Sky Tax Advisors.</p>
-  <p>At Ancorato I use AI to turn daily operating steps into documented procedures and build small tools for reporting and automation. I’m aiming at product, product operations, and automation roles in fintech, and I’m planning a Master of Science in Artificial Intelligence to go deeper.</p>
+  <p>At Ancorato I use AI to turn daily operating steps into documented procedures and build small tools for reporting and automation. I’m planning a Master of Science in Artificial Intelligence to go deeper.</p>
 </div></section>
 
 <section id="work"><div class="wrap">
@@ -562,14 +584,6 @@ document.getElementById(&quot;e-copy&quot;).addEventListener(&quot;click&quot;,f
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <h2>Experience</h2>
-  <div class="job"><span><strong>Investment Operations Assistant</strong>, Ancorato Capital</span><span>Oct 2026 – present, part-time</span></div>
-  <div class="job"><span><strong>Operations Associate</strong>, Blue Sky Tax Advisors</span><span>Nov 2026 – present, part-time</span></div>
-  <div class="job"><span><strong>Wealth Management Operations Associate</strong>, Idaho Trust Company</span><span>Apr 2026 – Sep 2026</span></div>
-  <div class="job"><span><strong>Personal Banker</strong>, Wells Fargo / <strong>Retail Relationship Banker</strong>, BMO</span><span>Dec 2024 – Apr 2026</span></div>
-</div></section>
-
 <footer><div class="wrap">
   Read the <a href="https://rubyjoaquin.github.io/blog.html">blog</a>. Want to talk? <a href="mailto:rubyjoaquin@gmail.com">Email me</a> or <a href="https://github.com/rubyjoaquin" target="_blank" rel="noopener">browse my GitHub</a>.
 </div></footer>
@@ -638,5 +652,6 @@ PROJECTS.forEach(function(p, i){
 });
 
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "c02a1d4a371b461da393f3c80dcada30"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
