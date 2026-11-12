@@ -181,13 +181,13 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
 
 <section id="dashboard"><div class="wrap">
   <h2>Investment Operations Dashboard</h2>
-  <p class="dsub">A working demo on sample data. Daily, weekly and monthly checklists, an SOP builder for every task, a completion calendar, and an exception reporter. It runs entirely in your browser.</p>
-  <div class="dframe"><iframe id="dash" title="Investment Operations Dashboard, interactive demo" srcdoc="&lt;!DOCTYPE html&gt;
+  <p class="dsub">A working demo on sample data. Daily, weekly and monthly checklists, an SOP builder for every task with optional AI drafting, a completion calendar, and an exception reporter. It runs in your browser, and the AI runs on your own device, so nothing you type is uploaded. Open any task’s SOP to try it.</p>
+  <div class="dframe"><iframe id="dash" title="Investment Operations Dashboard, interactive demo with AI SOP drafting" srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
 &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1, viewport-fit=cover&quot;&gt;
-&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; script-src &#x27;unsafe-inline&#x27;; img-src data:; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; style-src &#x27;unsafe-inline&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;wasm-unsafe-eval&#x27; https://cdn.jsdelivr.net; img-src data:; connect-src https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com; worker-src blob:; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
 &lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
 &lt;title&gt;Investment Operations Dashboard&lt;/title&gt;
 &lt;style&gt;
@@ -255,6 +255,21 @@ dialog::backdrop{background:rgba(10,25,45,.55);}
 .thumb{display:block;max-width:100%;max-height:180px;border:1px solid var(--line);border-radius:6px;margin-top:8px;}
 .srow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 .btn.sm{padding:5px 10px;font-size:13px;}
+
+.ai{border:1.5px solid var(--accent);background:var(--tint);border-radius:10px;padding:12px 14px;margin:12px 0 4px;}
+.ai h3{margin:0;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.ai .st{font-size:12px;font-weight:600;color:var(--muted);}
+.ai .st.ok{color:#1E7A46;}.ai .st.no{color:#B3361F;}
+@media (prefers-color-scheme:dark){:root:not([data-theme=&quot;light&quot;]) .ai .st.ok{color:#6FD39A;}:root:not([data-theme=&quot;light&quot;]) .ai .st.no{color:#FF9B88;}}
+.ai textarea{min-height:110px;}
+.ai .opts{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:8px;font-size:13px;}
+.ai .opts label{display:flex;gap:6px;align-items:center;cursor:pointer;}
+.ai .opts select,.ai .inl select{width:auto;max-width:100%;padding:4px 8px;font-size:13px;}
+.ai .note{font-size:13px;color:var(--muted);margin:6px 0 0;}
+.ai progress{width:100%;height:10px;margin-top:8px;accent-color:var(--accent);}
+.ai details{margin-top:8px;font-size:13px;}
+.ai details summary{cursor:pointer;color:var(--muted);font-weight:600;}
+.ai pre{margin:8px 0 0;max-height:130px;overflow:auto;white-space:pre-wrap;word-break:break-word;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;}
 [hidden]{display:none!important;}
 @media (max-width:820px){.db{grid-template-columns:1fr;}}@media (max-width:520px){.day{min-height:48px;padding:4px;font-size:12px;}.cal{gap:4px;}}
 &lt;/style&gt;
@@ -266,7 +281,7 @@ dialog::backdrop{background:rgba(10,25,45,.55);}
   &lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip&quot; id=&quot;c-daily&quot;&gt;&lt;/span&gt;&lt;span class=&quot;chip&quot; id=&quot;c-weekly&quot;&gt;&lt;/span&gt;&lt;span class=&quot;chip&quot; id=&quot;c-monthly&quot;&gt;&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;&lt;/header&gt;
 &lt;main class=&quot;wrap&quot;&gt;
-  &lt;p class=&quot;notice&quot;&gt;Everything on this page stays in your browser and nothing is sent anywhere. Never enter client names, account numbers, SSNs, or other confidential data, including in SOP text and screenshots.&lt;/p&gt;
+  &lt;p class=&quot;notice&quot;&gt;Everything you type stays on your device and is never sent to a server. The optional AI runs on your own device. Never enter client names, account numbers, SSNs, or other confidential data, including in SOP text and screenshots.&lt;/p&gt;
   &lt;div role=&quot;tablist&quot; aria-label=&quot;Sections&quot;&gt;
     &lt;button role=&quot;tab&quot; id=&quot;t-daily&quot; aria-selected=&quot;true&quot; aria-controls=&quot;p-daily&quot;&gt;Daily&lt;/button&gt;
     &lt;button role=&quot;tab&quot; id=&quot;t-weekly&quot; aria-selected=&quot;false&quot; aria-controls=&quot;p-weekly&quot;&gt;Weekly&lt;/button&gt;
@@ -301,7 +316,7 @@ dialog::backdrop{background:rgba(10,25,45,.55);}
       &lt;div id=&quot;e-msg&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
     &lt;/div&gt;
   &lt;/section&gt;
-  &lt;footer&gt;No tracking, no external requests, no accounts. Data is saved only in this browser. Clear your site data to erase it.&lt;/footer&gt;
+  &lt;footer&gt;No tracking, no accounts. Data is saved only in this browser. If you choose the in-browser AI, the AI library and model are downloaded once from public hosts (jsDelivr and Hugging Face); your text is never uploaded. Clear your site data to erase it.&lt;/footer&gt;
 &lt;/main&gt;
 
 &lt;dialog id=&quot;dlg&quot; aria-labelledby=&quot;dtitle&quot;&gt;
@@ -309,6 +324,39 @@ dialog::backdrop{background:rgba(10,25,45,.55);}
   &lt;div class=&quot;db&quot;&gt;
     &lt;div&gt;
       &lt;p class=&quot;sub&quot;&gt;Saves automatically for this task only. Blur or crop anything sensitive in screenshots, and never include client names or account numbers.&lt;/p&gt;
+
+      &lt;div class=&quot;ai&quot; id=&quot;ai&quot;&gt;
+        &lt;h3&gt;&lt;span&gt;&amp;#10024; Draft with AI&lt;/span&gt;&lt;span class=&quot;st&quot; id=&quot;ai-st&quot; aria-live=&quot;polite&quot;&gt;&lt;/span&gt;&lt;/h3&gt;
+        &lt;label class=&quot;f&quot; for=&quot;ai-engine&quot; style=&quot;margin-top:8px&quot;&gt;Where should the AI run?&lt;/label&gt;
+        &lt;select id=&quot;ai-engine&quot;&gt;
+          &lt;option value=&quot;browser&quot;&gt;In my browser (private, uses my graphics card)&lt;/option&gt;
+          &lt;option value=&quot;sample&quot;&gt;Sample draft (instant, no AI)&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;div id=&quot;ai-web&quot;&gt;
+          &lt;p class=&quot;note inl&quot;&gt;&lt;label for=&quot;ai-wm&quot;&gt;Model:&lt;/label&gt;
+            &lt;select id=&quot;ai-wm&quot;&gt;&lt;option value=&quot;small&quot;&gt;Faster (Qwen 1.5B, about 1 GB)&lt;/option&gt;&lt;option value=&quot;big&quot;&gt;Better (Qwen 3B, about 2 GB)&lt;/option&gt;&lt;/select&gt;&lt;/p&gt;
+          &lt;p class=&quot;note&quot; id=&quot;ai-webnote&quot;&gt;&lt;/p&gt;
+          &lt;progress id=&quot;ai-prog&quot; max=&quot;100&quot; value=&quot;0&quot; hidden&gt;&lt;/progress&gt;
+        &lt;/div&gt;
+        &lt;label class=&quot;f&quot; for=&quot;ai-notes&quot; style=&quot;margin-top:12px&quot;&gt;Describe this task in your own words&lt;/label&gt;
+        &lt;textarea id=&quot;ai-notes&quot; maxlength=&quot;4000&quot; placeholder=&quot;Rough notes are fine. What triggers it, which systems you open, what you check, what counts as an exception, who you tell. No client names or account numbers.&quot;&gt;&lt;/textarea&gt;
+        &lt;div class=&quot;opts&quot;&gt;
+          &lt;label for=&quot;ai-mode&quot;&gt;Steps:
+            &lt;select id=&quot;ai-mode&quot;&gt;&lt;option value=&quot;new&quot;&gt;Write new steps from my notes&lt;/option&gt;&lt;option value=&quot;fill&quot;&gt;Write instructions for my existing steps&lt;/option&gt;&lt;/select&gt;
+          &lt;/label&gt;
+          &lt;label&gt;&lt;input type=&quot;checkbox&quot; id=&quot;ai-over&quot;&gt; Overwrite text I already wrote&lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;btns&quot; style=&quot;margin-top:10px&quot;&gt;
+          &lt;button class=&quot;btn&quot; id=&quot;ai-go&quot; type=&quot;button&quot;&gt;Draft SOP&lt;/button&gt;
+          &lt;button class=&quot;btn alt&quot; id=&quot;ai-stop&quot; type=&quot;button&quot; hidden&gt;Stop&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;details&gt;&lt;summary&gt;Advanced&lt;/summary&gt;
+          &lt;label class=&quot;f&quot; for=&quot;ai-temp&quot;&gt;Creativity (0 = strict, 1 = loose)&lt;/label&gt;
+          &lt;input type=&quot;text&quot; id=&quot;ai-temp&quot; value=&quot;0.3&quot; maxlength=&quot;4&quot;&gt;
+        &lt;/details&gt;
+        &lt;div id=&quot;ai-msg&quot; class=&quot;note&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
+        &lt;pre id=&quot;ai-out&quot; hidden&gt;&lt;/pre&gt;
+      &lt;/div&gt;
       &lt;label class=&quot;f&quot; for=&quot;f-title&quot;&gt;SOP title&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;f-title&quot; maxlength=&quot;120&quot;&gt;
       &lt;label class=&quot;f&quot; for=&quot;f-purpose&quot;&gt;Purpose&lt;/label&gt;&lt;textarea id=&quot;f-purpose&quot; maxlength=&quot;600&quot;&gt;&lt;/textarea&gt;
       &lt;label class=&quot;f&quot; for=&quot;f-sys&quot;&gt;Systems used&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;f-sys&quot; maxlength=&quot;160&quot; placeholder=&quot;Example: ticketing system, data platform&quot;&gt;
@@ -555,6 +603,173 @@ document.getElementById(&quot;pv&quot;).addEventListener(&quot;click&quot;,funct
 document.getElementById(&quot;del&quot;).addEventListener(&quot;click&quot;,function(){
   if(!confirm(&quot;Delete this SOP? This can\u2019t be undone.&quot;))return;
   try{localStorage.removeItem(&quot;opsdash:sop:&quot;+cur.id);}catch(e){}cur=null;dlg.close();});
+
+
+// ---------- AI drafting: in-browser (WebLLM) | local llama.cpp | built-in sample ----------
+var WEBLLM_URL=&quot;https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.83/+esm&quot;;
+var WMODELS={small:{id:&quot;Qwen2.5-1.5B-Instruct-q4f16_1-MLC&quot;,size:&quot;about 1 GB&quot;},big:{id:&quot;Qwen2.5-3B-Instruct-q4f16_1-MLC&quot;,size:&quot;about 2 GB&quot;}};
+var AI={busy:false,mod:null,web:null,webId:null,gpu:null,stopFlag:false};
+var AI_SCHEMA={type:&quot;object&quot;,additionalProperties:false,required:[&quot;purpose&quot;,&quot;systems&quot;,&quot;steps&quot;],properties:{
+  purpose:{type:&quot;string&quot;},systems:{type:&quot;string&quot;},
+  steps:{type:&quot;array&quot;,items:{type:&quot;object&quot;,additionalProperties:false,required:[&quot;head&quot;,&quot;text&quot;],properties:{head:{type:&quot;string&quot;},text:{type:&quot;string&quot;}}}}}};
+var AI_SYS=&quot;You are a technical writer for an investment operations team. You write Standard Operating Procedures (SOPs) for structured notes processing, data verification, reporting platforms, ticketing and exception handling.\n&quot;+
+&quot;Rules:\n- Write in plain, direct, imperative language (\&quot;Open the report\&quot;, \&quot;Confirm the maturity date matches\&quot;).\n&quot;+
+&quot;- One action or one check per step. Each step has a short headline (under 8 words) and instructions of 1 to 4 sentences.\n&quot;+
+&quot;- Use ONLY facts, systems, tools and names given to you. Never invent system names, thresholds, deadlines, people or numbers. Where a needed detail is missing, write a placeholder like [CONFIRM: report name].\n&quot;+
+&quot;- Include a verification step and an escalation step (who to tell if something does not match) where it makes sense. If no escalation contact is given, use \&quot;the Investment Operations Manager\&quot;.\n&quot;+
+&quot;- Never include client names, account numbers or SSNs.\n&quot;+
+&quot;- &#x27;purpose&#x27; is 1 to 3 sentences on why the task exists. &#x27;systems&#x27; is a short comma-separated list of systems mentioned.\n&quot;+
+&quot;- Respond with JSON only, matching the requested schema.&quot;;
+function $(i){return document.getElementById(i);}
+function aiSay(t){$(&quot;ai-msg&quot;).textContent=t;}
+function aiStatus(ok,t){var s=$(&quot;ai-st&quot;);s.className=&quot;st&quot;+(ok===true?&quot; ok&quot;:ok===false?&quot; no&quot;:&quot;&quot;);s.textContent=t;}
+function aiEngine(){return $(&quot;ai-engine&quot;).value;}
+function wCached(){return read(&quot;opsdash:wllm:&quot;+WMODELS[$(&quot;ai-wm&quot;).value].id,false)===true;}
+function aiRefresh(){
+  var e=aiEngine(),go=$(&quot;ai-go&quot;);
+  $(&quot;ai-web&quot;).hidden=e!==&quot;browser&quot;;
+  write(&quot;opsdash:aiengine&quot;,e);
+  if(e===&quot;browser&quot;){
+    var m=WMODELS[$(&quot;ai-wm&quot;).value];
+    if(AI.gpu===false){aiStatus(false,&quot;\u25CB This browser can\u2019t run it&quot;);}
+    else if(AI.web&amp;&amp;AI.webId===m.id){aiStatus(true,&quot;\u25CF Model loaded&quot;);}
+    else if(wCached()){aiStatus(true,&quot;\u25CF Model saved on this device&quot;);}
+    else aiStatus(null,&quot;Needs a one-time download (&quot;+m.size+&quot;)&quot;);
+    $(&quot;ai-webnote&quot;).textContent=wCached()||(AI.web&amp;&amp;AI.webId===m.id)
+      ?&quot;Runs on your graphics card. Your text never leaves this device.&quot;
+      :&quot;First use downloads the AI model (&quot;+m.size+&quot;) and saves it in this browser. It starts only when you click the button. Your text never leaves this device.&quot;;
+    go.textContent=(AI.web&amp;&amp;AI.webId===m.id)||wCached()?&quot;Draft SOP&quot;:&quot;Download model (&quot;+m.size+&quot;) &amp; draft&quot;;
+  }
+  else{go.textContent=&quot;Insert sample draft&quot;;aiStatus(true,&quot;\u25CF Built-in example, no AI&quot;);}
+}
+async function detectGpu(){
+  try{AI.gpu=!!(navigator.gpu&amp;&amp;await navigator.gpu.requestAdapter());}catch(e){AI.gpu=false;}
+  if(!AI.gpu){var o=$(&quot;ai-engine&quot;).querySelector(&quot;option[value=browser]&quot;);o.disabled=true;o.textContent=&quot;In my browser (not available on this device)&quot;;
+    if(aiEngine()===&quot;browser&quot;)$(&quot;ai-engine&quot;).value=&quot;sample&quot;;}
+  aiRefresh();
+}
+function aiBuild(notes,mode){
+  var lines=[&quot;Task: &quot;+cur.task,&quot;Frequency: &quot;+NAMES[cur.type],&quot;Owner or role: &quot;+(cur.owner||&quot;Investment Operations&quot;),&quot;SOP title: &quot;+(cur.title||cur.task)];
+  if(cur.systems)lines.push(&quot;Systems already listed: &quot;+cur.systems);
+  if(cur.purpose)lines.push(&quot;Purpose already written: &quot;+cur.purpose);
+  var u=lines.join(&quot;\n&quot;)+&quot;\n\nAuthor&#x27;s notes:\n&quot;+(notes||&quot;(none given; draft a reasonable skeleton from the task name and mark every missing detail with [CONFIRM: ...])&quot;);
+  if(mode===&quot;fill&quot;){
+    var hs=cur.steps.map(function(s,i){return (i+1)+&quot;. &quot;+(s.head||&quot;(no headline yet)&quot;)+(s.text?&quot; -- existing text: &quot;+s.text:&quot;&quot;);});
+    u+=&quot;\n\nThe author already has these &quot;+cur.steps.length+&quot; steps (each has a screenshot you cannot see). Return EXACTLY &quot;+cur.steps.length+&quot; steps, in this same order, writing the instructions for each. Keep or improve each headline:\n&quot;+hs.join(&quot;\n&quot;);
+  }
+  return [{role:&quot;system&quot;,content:AI_SYS},{role:&quot;user&quot;,content:u}];
+}
+function aiParse(txt){
+  txt=txt.replace(/&lt;think&gt;[\s\S]*?&lt;\/think&gt;/g,&quot;&quot;).trim();
+  try{return JSON.parse(txt);}catch(e){}
+  var a=txt.indexOf(&quot;{&quot;),b=txt.lastIndexOf(&quot;}&quot;);
+  if(a&gt;=0&amp;&amp;b&gt;a){try{return JSON.parse(txt.slice(a,b+1));}catch(e){}}
+  return null;
+}
+function aiApply(d,mode,over){
+  var cl=function(s,n){return String(s==null?&quot;&quot;:s).replace(/\s+$/,&quot;&quot;).slice(0,n);};
+  if(d.purpose&amp;&amp;(over||!cur.purpose))cur.purpose=cl(d.purpose,600);
+  if(d.systems&amp;&amp;(over||!cur.systems))cur.systems=cl(d.systems,160);
+  var st=Array.isArray(d.steps)?d.steps:[];
+  if(mode===&quot;fill&quot;){
+    st.forEach(function(s,i){
+      if(i&lt;cur.steps.length){var c=cur.steps[i];
+        if(s.head&amp;&amp;(over||!c.head))c.head=cl(s.head,120);
+        if(s.text&amp;&amp;(over||!c.text))c.text=cl(s.text,1500);}
+      else cur.steps.push({head:cl(s.head,120),text:cl(s.text,1500),img:&quot;&quot;});});
+  }else st.forEach(function(s){cur.steps.push({head:cl(s.head,120),text:cl(s.text,1500),img:&quot;&quot;});});
+  Object.keys(F).forEach(function(k){$(F[k]).value=cur[k]||&quot;&quot;;});
+  stepsUI();prev();save();
+}
+function aiSample(){
+  return {purpose:&quot;Explain why \u201C&quot;+cur.task+&quot;\u201D is done and who relies on the result. [CONFIRM: add the specific purpose]&quot;,
+    systems:&quot;[CONFIRM: systems used]&quot;,
+    steps:[
+    {head:&quot;Gather what you need&quot;,text:&quot;Confirm you can open the systems listed above and have today\u2019s source report. [CONFIRM: report name]&quot;},
+    {head:&quot;Open the source data&quot;,text:&quot;Open the first source and locate the items to check. Note the date range so both sources cover the same period.&quot;},
+    {head:&quot;Compare against the second source&quot;,text:&quot;Check each key field (for example coupon, barrier level and maturity date) in both places. Write down any difference you find.&quot;},
+    {head:&quot;Record the result&quot;,text:&quot;Mark the task complete on the dashboard. Log any difference with its internal reference (ticket or note ID, never client names).&quot;},
+    {head:&quot;Escalate exceptions&quot;,text:&quot;Send anything that does not match to the Investment Operations Manager using the Exceptions tab, with a priority and the action needed.&quot;},
+    {head:&quot;Note improvements&quot;,text:&quot;Write down any step that could be documented better or automated, and add it to the automation backlog.&quot;}]};
+}
+async function webLoad(id){
+  if(AI.web&amp;&amp;AI.webId===id)return;
+  var pg=$(&quot;ai-prog&quot;);pg.hidden=false;pg.value=0;
+  var cb=function(p){pg.value=Math.round((p&amp;&amp;p.progress||0)*100);aiSay(((p&amp;&amp;p.text)||&quot;Loading model&quot;)+&quot;&quot;);};
+  aiSay(&quot;Loading the AI engine\u2026&quot;);
+  if(!AI.mod)AI.mod=await import(WEBLLM_URL);
+  var list=(AI.mod.prebuiltAppConfig&amp;&amp;AI.mod.prebuiltAppConfig.model_list)||[];
+  if(!list.some(function(m){return m.model_id===id;}))throw new Error(&quot;That model isn\u2019t available in this engine version.&quot;);
+  if(!AI.web)AI.web=await AI.mod.CreateMLCEngine(id,{initProgressCallback:cb});
+  else await AI.web.reload(id);
+  AI.webId=id;write(&quot;opsdash:wllm:&quot;+id,true);pg.hidden=true;
+}
+async function genWeb(msgs,temp,out,t0){
+  var acc=&quot;&quot;;
+  async function run(withSchema){
+    var req={messages:msgs,stream:true,temperature:temp,top_p:0.9,max_tokens:1500};
+    if(withSchema)req.response_format={type:&quot;json_object&quot;,schema:JSON.stringify(AI_SCHEMA)};
+    var stream=await AI.web.chat.completions.create(req);
+    for await(var ch of stream){
+      var t=ch.choices&amp;&amp;ch.choices[0]&amp;&amp;ch.choices[0].delta&amp;&amp;ch.choices[0].delta.content;
+      if(t){acc+=t;out.textContent=acc.slice(-700);out.scrollTop=out.scrollHeight;
+        aiSay(&quot;Drafting on your device\u2026 &quot;+acc.length+&quot; characters, &quot;+Math.round((Date.now()-t0)/1000)+&quot;s&quot;);}
+      if(AI.stopFlag)break;
+    }
+  }
+  try{await run(true);}catch(e){
+    if(AI.stopFlag)throw e;
+    acc=&quot;&quot;;aiSay(&quot;Retrying in a simpler mode\u2026&quot;);await run(false);
+  }
+  return acc;
+}
+async function aiDraft(){
+  if(AI.busy||!cur)return;
+  var eng=aiEngine(),notes=$(&quot;ai-notes&quot;).value.trim(),mode=$(&quot;ai-mode&quot;).value,over=$(&quot;ai-over&quot;).checked;
+  var target=cur,out=$(&quot;ai-out&quot;),go=$(&quot;ai-go&quot;),stop=$(&quot;ai-stop&quot;);
+  if(eng===&quot;sample&quot;){aiApply(aiSample(),&quot;new&quot;,over);aiSay(&quot;Sample draft added. This is a built-in example, not AI output. Choose \u201CIn my browser\u201D for a real AI draft.&quot;);return;}
+  if(mode===&quot;fill&quot;&amp;&amp;!cur.steps.length){aiSay(&quot;You have no steps yet. Add steps (or screenshots) first, or choose \u201CWrite new steps\u201D.&quot;);return;}
+  var temp=parseFloat($(&quot;ai-temp&quot;).value);if(!(temp&gt;=0&amp;&amp;temp&lt;=1.5))temp=0.3;
+  AI.busy=true;AI.stopFlag=false;go.disabled=true;stop.hidden=false;out.hidden=false;out.textContent=&quot;&quot;;
+  var t0=Date.now(),acc=&quot;&quot;;
+  try{
+    if(eng===&quot;browser&quot;){
+      if(AI.gpu===false)throw new Error(&quot;WebGPU isn\u2019t available in this browser. Try desktop Chrome or Edge, or use the sample draft.&quot;);
+      await webLoad(WMODELS[$(&quot;ai-wm&quot;).value].id);aiRefresh();
+      aiSay(&quot;Drafting on your device\u2026&quot;);
+      acc=await genWeb(aiBuild(notes.slice(0,2500),mode),temp,out,t0);
+    }
+    if(cur!==target)return;
+    var d=aiParse(acc);
+    if(!d){aiSay(&quot;The model\u2019s answer couldn\u2019t be read as an SOP. Try again, or add more detail to your notes.&quot;);return;}
+    aiApply(d,mode,over);
+    aiSay(&quot;Draft added (&quot;+(d.steps?d.steps.length:0)+&quot; steps). Review everything, especially any [CONFIRM: \u2026] placeholders, before using it.&quot;);
+    out.hidden=true;
+  }catch(e){
+    if(AI.stopFlag){aiSay(&quot;Stopped.&quot;);
+      var dd=acc&amp;&amp;aiParse(acc);if(dd&amp;&amp;cur===target){aiApply(dd,mode,over);aiSay(&quot;Stopped. Added what was finished.&quot;);}}
+    else{aiSay(&quot;Couldn\u2019t draft: &quot;+(e&amp;&amp;e.message?e.message:e)+(eng===&quot;browser&quot;?&quot; You can use the sample draft instead.&quot;:&quot;&quot;));$(&quot;ai-prog&quot;).hidden=true;}
+  }finally{AI.busy=false;go.disabled=false;stop.hidden=true;}
+}
+$(&quot;ai-go&quot;).addEventListener(&quot;click&quot;,aiDraft);
+$(&quot;ai-stop&quot;).addEventListener(&quot;click&quot;,function(){AI.stopFlag=true;try{if(AI.web&amp;&amp;AI.web.interruptGenerate)AI.web.interruptGenerate();}catch(e){}});
+$(&quot;ai-engine&quot;).addEventListener(&quot;change&quot;,function(){aiSay(&quot;&quot;);aiRefresh();});
+$(&quot;ai-wm&quot;).addEventListener(&quot;change&quot;,function(){write(&quot;opsdash:aiwm&quot;,$(&quot;ai-wm&quot;).value);aiRefresh();});
+(function init(){
+  var sv=read(&quot;opsdash:aiengine&quot;,&quot;sample&quot;);$(&quot;ai-engine&quot;).value=(sv===&quot;browser&quot;||sv===&quot;sample&quot;)?sv:&quot;sample&quot;;
+  var wm=read(&quot;opsdash:aiwm&quot;,&quot;small&quot;);$(&quot;ai-wm&quot;).value=WMODELS[wm]?wm:&quot;small&quot;;
+    aiRefresh();detectGpu();
+})();
+var _openSop=openSop;
+openSop=function(t,task){
+  _openSop(t,task);
+  var hasHeads=cur&amp;&amp;cur.steps.some(function(s){return s.head||s.text;});
+  $(&quot;ai-mode&quot;).value=hasHeads?&quot;fill&quot;:&quot;new&quot;;
+  $(&quot;ai-notes&quot;).value=read(&quot;opsdash:ainotes:&quot;+cur.id,&quot;&quot;);
+  $(&quot;ai-out&quot;).hidden=true;$(&quot;ai-prog&quot;).hidden=true;aiSay(&quot;&quot;);aiRefresh();
+};
+$(&quot;ai-notes&quot;).addEventListener(&quot;input&quot;,function(e){if(cur)write(&quot;opsdash:ainotes:&quot;+cur.id,e.target.value);});
+dlg.addEventListener(&quot;close&quot;,function(){AI.stopFlag=true;try{if(AI.web&amp;&amp;AI.web.interruptGenerate)AI.web.interruptGenerate();}catch(e){}});
 
 // Exceptions
 var toEl=document.getElementById(&quot;e-to&quot;);toEl.value=read(&quot;opsdash:mgr&quot;,&quot;&quot;);
