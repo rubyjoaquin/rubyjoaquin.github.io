@@ -115,6 +115,7 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
       <a class="l" href="#about">About</a>
       <a class="l" href="#work">Projects</a>
       <a class="l" href="https://rubyjoaquin.github.io/blog.html">Blog</a>
+      <a class="btn" href="sop-generator.html">SOP Generator</a>
       <a class="btn" href="https://github.com/rubyjoaquin" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </header>
@@ -153,8 +154,8 @@ iframe#dash{display:block;width:100%;height:720px;border:0;}
 <section id="experience"><div class="wrap">
   <h2>Experience</h2>
   <div class="xp">
-    <a class="xc" href="https://www.legacywealthmg.com/" target="_blank" rel="noopener"><span class="xr">Investment Operations Assistant</span><span class="xo">Ancorato Capital</span><span class="xd">Oct 2026 – present · part-time</span><span class="xgo" aria-hidden="true">↗</span></a>
-    <a class="xc" href="https://www.legacywealthmg.com/" target="_blank" rel="noopener"><span class="xr">Operations Associate</span><span class="xo">Blue Sky Tax Advisors</span><span class="xd">Nov 2026 – present · part-time</span><span class="xgo" aria-hidden="true">↗</span></a>
+    <a class="xc" href="https://www.legacywealthmg.com/" target="_blank" rel="noopener"><span class="xr">Investment Operations Assistant</span><span class="xo">Ancorato Capital (Legacy Wealth Management)</span><span class="xd">Oct 2026 – present · part-time</span><span class="xgo" aria-hidden="true">↗</span></a>
+    <a class="xc" href="https://www.legacywealthmg.com/" target="_blank" rel="noopener"><span class="xr">Operations Associate</span><span class="xo">Blue Sky Tax Advisors (Legacy Wealth Management)</span><span class="xd">Nov 2026 – present · part-time</span><span class="xgo" aria-hidden="true">↗</span></a>
     <div class="xc" tabindex="0"><span class="xr">Wealth Management Operations Associate</span><span class="xo">Idaho Trust Company</span><span class="xd">Apr 2026 – Sep 2026</span></div>
     <div class="xc" tabindex="0"><span class="xr">Personal Banker / Retail Relationship Banker</span><span class="xo">Wells Fargo / BMO</span><span class="xd">Dec 2024 – Apr 2026</span></div>
   </div>
@@ -269,7 +270,6 @@ dialog::backdrop{background:rgba(10,25,45,.55);}
 .ai progress{width:100%;height:10px;margin-top:8px;accent-color:var(--accent);}
 .ai details{margin-top:8px;font-size:13px;}
 .ai details summary{cursor:pointer;color:var(--muted);font-weight:600;}
-.ai pre{margin:8px 0 0;max-height:130px;overflow:auto;white-space:pre-wrap;word-break:break-word;font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;}
 [hidden]{display:none!important;}
 @media (max-width:820px){.db{grid-template-columns:1fr;}}@media (max-width:520px){.day{min-height:48px;padding:4px;font-size:12px;}.cal{gap:4px;}}
 &lt;/style&gt;
@@ -355,7 +355,6 @@ dialog::backdrop{background:rgba(10,25,45,.55);}
           &lt;input type=&quot;text&quot; id=&quot;ai-temp&quot; value=&quot;0.3&quot; maxlength=&quot;4&quot;&gt;
         &lt;/details&gt;
         &lt;div id=&quot;ai-msg&quot; class=&quot;note&quot; aria-live=&quot;polite&quot;&gt;&lt;/div&gt;
-        &lt;pre id=&quot;ai-out&quot; hidden&gt;&lt;/pre&gt;
       &lt;/div&gt;
       &lt;label class=&quot;f&quot; for=&quot;f-title&quot;&gt;SOP title&lt;/label&gt;&lt;input type=&quot;text&quot; id=&quot;f-title&quot; maxlength=&quot;120&quot;&gt;
       &lt;label class=&quot;f&quot; for=&quot;f-purpose&quot;&gt;Purpose&lt;/label&gt;&lt;textarea id=&quot;f-purpose&quot; maxlength=&quot;600&quot;&gt;&lt;/textarea&gt;
@@ -704,7 +703,7 @@ async function webLoad(id){
   else await AI.web.reload(id);
   AI.webId=id;write(&quot;opsdash:wllm:&quot;+id,true);pg.hidden=true;
 }
-async function genWeb(msgs,temp,out,t0){
+async function genWeb(msgs,temp,t0){
   var acc=&quot;&quot;;
   async function run(withSchema){
     var req={messages:msgs,stream:true,temperature:temp,top_p:0.9,max_tokens:1500};
@@ -712,7 +711,7 @@ async function genWeb(msgs,temp,out,t0){
     var stream=await AI.web.chat.completions.create(req);
     for await(var ch of stream){
       var t=ch.choices&amp;&amp;ch.choices[0]&amp;&amp;ch.choices[0].delta&amp;&amp;ch.choices[0].delta.content;
-      if(t){acc+=t;out.textContent=acc.slice(-700);out.scrollTop=out.scrollHeight;
+      if(t){acc+=t;
         aiSay(&quot;Drafting on your device\u2026 &quot;+acc.length+&quot; characters, &quot;+Math.round((Date.now()-t0)/1000)+&quot;s&quot;);}
       if(AI.stopFlag)break;
     }
@@ -726,25 +725,24 @@ async function genWeb(msgs,temp,out,t0){
 async function aiDraft(){
   if(AI.busy||!cur)return;
   var eng=aiEngine(),notes=$(&quot;ai-notes&quot;).value.trim(),mode=$(&quot;ai-mode&quot;).value,over=$(&quot;ai-over&quot;).checked;
-  var target=cur,out=$(&quot;ai-out&quot;),go=$(&quot;ai-go&quot;),stop=$(&quot;ai-stop&quot;);
+  var target=cur,go=$(&quot;ai-go&quot;),stop=$(&quot;ai-stop&quot;);
   if(eng===&quot;sample&quot;){aiApply(aiSample(),&quot;new&quot;,over);aiSay(&quot;Sample draft added. This is a built-in example, not AI output. Choose \u201CIn my browser\u201D for a real AI draft.&quot;);return;}
   if(mode===&quot;fill&quot;&amp;&amp;!cur.steps.length){aiSay(&quot;You have no steps yet. Add steps (or screenshots) first, or choose \u201CWrite new steps\u201D.&quot;);return;}
   var temp=parseFloat($(&quot;ai-temp&quot;).value);if(!(temp&gt;=0&amp;&amp;temp&lt;=1.5))temp=0.3;
-  AI.busy=true;AI.stopFlag=false;go.disabled=true;stop.hidden=false;out.hidden=false;out.textContent=&quot;&quot;;
+  AI.busy=true;AI.stopFlag=false;go.disabled=true;stop.hidden=false;
   var t0=Date.now(),acc=&quot;&quot;;
   try{
     if(eng===&quot;browser&quot;){
       if(AI.gpu===false)throw new Error(&quot;WebGPU isn\u2019t available in this browser. Try desktop Chrome or Edge, or use the sample draft.&quot;);
       await webLoad(WMODELS[$(&quot;ai-wm&quot;).value].id);aiRefresh();
       aiSay(&quot;Drafting on your device\u2026&quot;);
-      acc=await genWeb(aiBuild(notes.slice(0,2500),mode),temp,out,t0);
+      acc=await genWeb(aiBuild(notes.slice(0,2500),mode),temp,t0);
     }
     if(cur!==target)return;
     var d=aiParse(acc);
     if(!d){aiSay(&quot;The model\u2019s answer couldn\u2019t be read as an SOP. Try again, or add more detail to your notes.&quot;);return;}
     aiApply(d,mode,over);
     aiSay(&quot;Draft added (&quot;+(d.steps?d.steps.length:0)+&quot; steps). Review everything, especially any [CONFIRM: \u2026] placeholders, before using it.&quot;);
-    out.hidden=true;
   }catch(e){
     if(AI.stopFlag){aiSay(&quot;Stopped.&quot;);
       var dd=acc&amp;&amp;aiParse(acc);if(dd&amp;&amp;cur===target){aiApply(dd,mode,over);aiSay(&quot;Stopped. Added what was finished.&quot;);}}
@@ -766,7 +764,7 @@ openSop=function(t,task){
   var hasHeads=cur&amp;&amp;cur.steps.some(function(s){return s.head||s.text;});
   $(&quot;ai-mode&quot;).value=hasHeads?&quot;fill&quot;:&quot;new&quot;;
   $(&quot;ai-notes&quot;).value=read(&quot;opsdash:ainotes:&quot;+cur.id,&quot;&quot;);
-  $(&quot;ai-out&quot;).hidden=true;$(&quot;ai-prog&quot;).hidden=true;aiSay(&quot;&quot;);aiRefresh();
+  $(&quot;ai-prog&quot;).hidden=true;aiSay(&quot;&quot;);aiRefresh();
 };
 $(&quot;ai-notes&quot;).addEventListener(&quot;input&quot;,function(e){if(cur)write(&quot;opsdash:ainotes:&quot;+cur.id,e.target.value);});
 dlg.addEventListener(&quot;close&quot;,function(){AI.stopFlag=true;try{if(AI.web&amp;&amp;AI.web.interruptGenerate)AI.web.interruptGenerate();}catch(e){}});
