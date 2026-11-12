@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; img-src data:; connect-src https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://raw.githubusercontent.com; worker-src blob:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>SOP Generator | Joaquin Ruby</title>
+<style>
+:root{--bg:#F3F8FD;--surface:#FFFFFF;--ink:#12263A;--muted:#4C6278;--line:#D5E3F0;--accent:#2B6CB0;--on:#FFFFFF;--tint:#E6F0FA;box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px);}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A26;--surface:#162434;--ink:#E6EFF8;--muted:#9FB6CB;--line:#2A3F55;--accent:#7DB8F0;--on:#0B1B2B;--tint:#1D3249;}}
+:root[data-theme="dark"]{--bg:#0F1A26;--surface:#162434;--ink:#E6EFF8;--muted:#9FB6CB;--line:#2A3F55;--accent:#7DB8F0;--on:#0B1B2B;--tint:#1D3249;}
+*,*::before,*::after{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px;}
+.hero{background:linear-gradient(120deg,#E6F1FC 0%,#CFE3F7 55%,#B5D3F1 100%);color:#12263A;padding:calc(26px + env(safe-area-inset-top,0px)) 0 24px;border-bottom:4px solid #7FB2E5;}
+.hero h1{font-size:clamp(26px,4vw,36px);margin:0;letter-spacing:-.01em;}
+.hero p{margin:4px 0 14px;font-size:17px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{background:rgba(255,255,255,.7);border:1px solid #9CC3EA;color:#1F4E86;border-radius:999px;padding:4px 14px;font-weight:600;font-size:14px;}
+main{padding:20px 0 48px;}
+.notice{background:var(--tint);border-left:4px solid var(--accent);border-radius:6px;padding:10px 14px;font-size:14px;margin:0 0 18px;}
+[role=tablist]{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line);margin-bottom:20px;}
+[role=tab]{font:inherit;font-weight:600;background:none;color:var(--muted);border:0;border-bottom:4px solid transparent;margin-bottom:-2px;padding:10px 14px;cursor:pointer;}
+[role=tab][aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent);}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+.card{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--accent);border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(30,70,120,.08);}
+#p-daily .card{border-top-color:#8EC0EE;}#p-weekly .card{border-top-color:#4A90D9;}#p-monthly .card{border-top-color:#1F4E86;}
+h2{font-size:20px;margin:0 0 4px;}
+.sub{color:var(--muted);margin:0 0 12px;}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin:8px 0 14px;}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#9CC7EE,#2B6CB0);transition:width .3s;}
+ul.tasks{list-style:none;margin:0;padding:0;}
+ul.tasks li{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);}
+ul.tasks li:first-child{border-top:0;}
+ul.tasks label{flex:1;display:flex;gap:10px;cursor:pointer;}
+ul.tasks input[type=checkbox]{width:20px;height:20px;margin-top:2px;accent-color:var(--accent);flex:none;}
+ul.tasks input:checked+span{color:var(--muted);text-decoration:line-through;}
+.sopbtn{font:inherit;font-size:13px;font-weight:600;white-space:nowrap;background:none;color:var(--accent);border:1.5px solid var(--accent);border-radius:999px;padding:3px 13px;cursor:pointer;}
+.sopbtn.has{background:var(--accent);color:var(--on);}
+.x{background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
+.row{display:flex;gap:8px;margin-top:14px;}
+label.f{display:block;font-weight:600;font-size:14px;margin:12px 0 4px;}
+input[type=text],input[type=email],select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;}
+textarea{min-height:84px;resize:vertical;}
+.btn{font:inherit;font-weight:600;background:var(--accent);color:var(--on);border:0;border-radius:6px;padding:9px 16px;cursor:pointer;}
+.btn.alt{background:none;color:var(--accent);border:1.5px solid var(--accent);}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+footer{color:var(--muted);font-size:13px;margin-top:28px;}
+dialog{width:min(1080px,96vw);max-height:92vh;border:0;border-radius:12px;padding:0;background:var(--bg);color:var(--ink);overflow:auto;}
+dialog::backdrop{background:rgba(10,25,45,.55);}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 20px;background:linear-gradient(120deg,#E6F1FC,#BBD8F4);color:#12263A;position:sticky;top:0;z-index:2;}
+.dh h2{margin:0;font-size:19px;}.dh .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.9;}
+.dh .btn{background:#2B6CB0;color:#fff;}
+.db{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:20px;}
+.step{border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;background:var(--surface);}
+.step small{color:var(--accent);font-weight:700;}
+#prev{padding:22px;border:1px solid var(--line);border-radius:8px;align-self:start;}
+#msg,#e-msg{font-size:14px;color:var(--muted);min-height:1.4em;margin-top:10px;}
+.calh{display:flex;justify-content:space-between;align-items:center;gap:12px;}.calh h2{margin:0;}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px;}
+.dow{font-size:12px;font-weight:600;color:var(--muted);text-align:center;}
+.day{min-height:60px;border:1px solid var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;justify-content:space-between;font-size:13px;background:var(--surface);color:var(--muted);}
+.day.blank{border:0;background:none;}.day.today{outline:3px solid var(--accent);outline-offset:1px;}.day.future{opacity:.5;}
+.dn{font-weight:700;}.dp{font-size:12px;text-align:right;font-weight:600;}
+.legend{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-top:14px;flex-wrap:wrap;}
+.legend i{flex:0 0 150px;height:10px;border-radius:5px;background:linear-gradient(90deg,#E3EEF8,#1D4E89);}
+.drop{border:2px dashed var(--accent);background:var(--tint);border-radius:10px;padding:18px 14px;text-align:center;cursor:pointer;margin-top:14px;font-weight:600;}
+.drop small{display:block;font-weight:400;color:var(--muted);margin-top:4px;}
+.drop.over,.drop:hover{background:var(--line);}
+.thumb{display:block;max-width:100%;max-height:180px;border:1px solid var(--line);border-radius:6px;margin-top:8px;}
+.srow{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.btn.sm{padding:5px 10px;font-size:13px;}
+
+.ai{border:1.5px solid var(--accent);background:var(--tint);border-radius:10px;padding:12px 14px;margin:12px 0 4px;}
+.ai h3{margin:0;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.ai .st{font-size:12px;font-weight:600;color:var(--muted);}
+.ai .st.ok{color:#1E7A46;}.ai .st.no{color:#B3361F;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ai .st.ok{color:#6FD39A;}:root:not([data-theme="light"]) .ai .st.no{color:#FF9B88;}}
+.ai textarea{min-height:110px;}
+.ai .opts{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:8px;font-size:13px;}
+.ai .opts label{display:flex;gap:6px;align-items:center;cursor:pointer;}
+.ai .opts select,.ai .inl select{width:auto;max-width:100%;padding:4px 8px;font-size:13px;}
+.ai .note{font-size:13px;color:var(--muted);margin:6px 0 0;}
+.ai progress{width:100%;height:10px;margin-top:8px;accent-color:var(--accent);}
+.ai details{margin-top:8px;font-size:13px;}
+.ai details summary{cursor:pointer;color:var(--muted);font-weight:600;}
+[hidden]{display:none!important;}
+@media (max-width:820px){.db{grid-template-columns:1fr;}}@media (max-width:520px){.day{min-height:48px;padding:4px;font-size:12px;}.cal{gap:4px;}}
+.back{display:inline-block;margin-top:4px;color:#12263A;font-weight:600;}
+#page .db{padding:20px 0;}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <h1>SOP Generator</h1>
+  <p>Draft a Standard Operating Procedure with an AI that runs on your own device, add screenshots, and download it.</p>
+  <a class="back" href="index.html">&larr; Back to the site</a>
+</div></header>
+<main class="wrap">
+  <p class="notice">Everything you type stays on your device and is never sent to a server. The optional AI runs on your own device. Never enter client names, account numbers, SSNs, or other confidential data, including in SOP text and screenshots.</p>
+  <div id="page">
+  <div class="db">
+    <div>
+      <p class="sub">Starts blank. Nothing is saved automatically, so use Download to keep your SOP. Blur or crop anything sensitive in screenshots, and never include client names or account numbers.</p>
+
+      <div class="ai" id="ai">
+        <h3><span>&#10024; Draft with AI</span><span class="st" id="ai-st" aria-live="polite"></span></h3>
+        <label class="f" for="ai-engine" style="margin-top:8px">Where should the AI run?</label>
+        <select id="ai-engine">
+          <option value="browser">In my browser (private, uses my graphics card)</option>
+          <option value="sample">Sample draft (instant, no AI)</option>
+        </select>
+        <div id="ai-web">
+          <p class="note inl"><label for="ai-wm">Model:</label>
+            <select id="ai-wm"><option value="small">Faster (Qwen 1.5B, about 1 GB)</option><option value="big">Better (Qwen 3B, about 2 GB)</option></select></p>
+          <p class="note" id="ai-webnote"></p>
+          <progress id="ai-prog" max="100" value="0" hidden></progress>
+        </div>
+        <label class="f" for="ai-notes" style="margin-top:12px">Describe this task in your own words</label>
+        <textarea id="ai-notes" maxlength="4000" placeholder="Rough notes are fine. What triggers it, which systems you open, what you check, what counts as an exception, who you tell. No client names or account numbers."></textarea>
+        <div class="opts">
+          <label for="ai-mode">Steps:
+            <select id="ai-mode"><option value="new">Write new steps from my notes</option><option value="fill">Write instructions for my existing steps</option></select>
+          </label>
+          <label><input type="checkbox" id="ai-over"> Overwrite text I already wrote</label>
+        </div>
+        <div class="btns" style="margin-top:10px">
+          <button class="btn" id="ai-go" type="button">Draft SOP</button>
+          <button class="btn alt" id="ai-stop" type="button" hidden>Stop</button>
+        </div>
+        <details><summary>Advanced</summary>
+          <label class="f" for="ai-temp">Creativity (0 = strict, 1 = loose)</label>
+          <input type="text" id="ai-temp" value="0.3" maxlength="4">
+        </details>
+        <div id="ai-msg" class="note" aria-live="polite"></div>
+      </div>
+      <label class="f" for="f-title">SOP title</label><input type="text" id="f-title" maxlength="120">
+      <label class="f" for="f-purpose">Purpose</label><textarea id="f-purpose" maxlength="600"></textarea>
+      <label class="f" for="f-sys">Systems used</label><input type="text" id="f-sys" maxlength="160" placeholder="Example: ticketing system, data platform">
+      <label class="f" for="f-owner">Owner or role</label><input type="text" id="f-owner" maxlength="80">
+      <label class="f" for="f-ver">Version</label><input type="text" id="f-ver" maxlength="12">
+      <label class="f" for="f-type">Frequency</label><select id="f-type"><option value="adhoc">Ad hoc</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add screenshots">Drop screenshots here, or click to choose<small>Or just paste (Ctrl+V / Cmd+V). Each photo becomes a new step, in order.</small></div>
+      <input type="file" id="multi" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+      <div id="steps"></div>
+      <div class="btns">
+        <button class="btn alt" id="add-step" type="button">Add step</button>
+        <button class="btn" id="dl" type="button">Download</button>
+        <button class="btn alt" id="pv" type="button">Print view</button>
+        <button class="btn alt" id="del" type="button">Start over</button>
+      </div>
+      <div id="msg" aria-live="polite"></div>
+    </div>
+    <div class="doc" id="prev" aria-label="SOP preview"></div>
+  </div>
+</div>
+  <footer>No tracking, no accounts. If you choose the in-browser AI, the AI library and model are downloaded once from public hosts (jsDelivr and Hugging Face); your text is never uploaded.</footer>
+</main>
+<script>
+var FIRM="Sample Operations Template",CONF="Sample Template \u2014 No Firm or Client Data";
+var NAMES={adhoc:"Ad hoc",daily:"Daily",weekly:"Weekly",monthly:"Monthly"};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!==undefined)e.textContent=x;return e;}
+function pad(n){return String(n).padStart(2,"0");}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function nl(s){return s.replace(/\n/g,"<br>");}
+function read(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function write(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function hash(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36);}
+function sopId(t,task){return t+"-"+hash(task);}
+function has(id){try{return localStorage.getItem("opsdash:sop:"+id)!==null;}catch(e){return false;}}
+// Shared document styles (used by the preview and by exported files)
+var DOCCSS=`.doc,.doc *{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}
+.doc{font:15px/1.6 "Segoe UI",Arial,sans-serif;color:#12263A;background:#fff}
+.doc .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;border-bottom:4px solid #2B6CB0;padding-bottom:10px}
+.doc .firm{font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:#1F4E86}
+.doc .kind{font-size:12px;color:#5A6B7D}
+.doc .tag{font-size:11px;font-weight:700;color:#fff;background:#1F4E86;padding:5px 10px;border-radius:3px;letter-spacing:.05em;text-align:center}
+.doc h1{font-size:26px;margin:18px 0 8px;color:#12263A}
+.doc table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+.doc td{border:1px solid #CFE0F0;padding:6px 10px}
+.doc td:nth-child(odd){background:#E6F0FA;font-weight:600;width:16%}
+.doc h2{font-size:14px;text-transform:uppercase;letter-spacing:.07em;color:#1F4E86;border-bottom:1px solid #CFE0F0;padding-bottom:4px;margin:22px 0 8px}
+.doc .st{margin:14px 0;break-inside:avoid}
+.doc .st h3{font-size:16px;margin:0 0 4px;color:#12263A}
+.doc .n{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:#2B6CB0;color:#fff;font-size:13px;margin-right:8px}
+.doc img{max-width:100%;border:1px solid #CFE0F0;border-radius:4px;margin-top:8px}
+.doc .fig{font-size:12px;color:#5A6B7D}
+.doc .foot{margin-top:28px;border-top:1px solid #CFE0F0;padding-top:8px;font-size:11px;color:#5A6B7D;text-align:center;background:#fff}
+@media print{.doc .foot{position:fixed;bottom:0;left:0;right:0;margin:0}}`;
+var sty=document.createElement("style");sty.textContent=DOCCSS;document.head.appendChild(sty);
+
+function docHtml(s){
+  var h="<div class=\"top\"><div><div class=\"firm\">"+esc(FIRM)+"</div><div class=\"kind\">Standard Operating Procedure</div></div><div class=\"tag\">"+esc(CONF)+"</div></div>";
+  h+="<h1>"+esc(s.title||s.task||"Untitled SOP")+"</h1>";
+  h+="<table><tr><td>Owner</td><td>"+esc(s.owner||"\u2014")+"</td><td>Frequency</td><td>"+esc(NAMES[s.type])+"</td></tr><tr><td>Version</td><td>"+esc(s.version||"\u2014")+"</td><td>Last updated</td><td>"+esc(s.date||new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}))+"</td></tr><tr><td>Systems</td><td colspan=\"3\">"+esc(s.systems||"\u2014")+"</td></tr></table>";
+  if(s.purpose)h+="<h2>Purpose</h2><p>"+nl(esc(s.purpose))+"</p>";
+  if(s.steps.length)h+="<h2>Procedure</h2>";
+  s.steps.forEach(function(p,i){
+    h+="<div class=\"st\"><h3><span class=\"n\">"+(i+1)+"</span>"+esc(p.head||"Step "+(i+1))+"</h3>";
+    if(p.text)h+="<p>"+nl(esc(p.text))+"</p>";
+    if(p.img&&p.img.indexOf("data:image/")===0)h+="<img alt=\"Screenshot for step "+(i+1)+"\" src=\""+p.img+"\"><div class=\"fig\">Figure "+(i+1)+"</div>";
+    h+="</div>";
+  });
+  return h+"<div class=\"foot\">"+esc(CONF)+" \u2022 "+esc(FIRM)+"</div>";
+}
+function docFile(s){
+  return "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; style-src 'unsafe-inline'; img-src data:\"><title>"+esc(s.title||s.task)+"</title><style>"+DOCCSS+"body{margin:0;padding:32px;background:#fff}@page{margin:16mm 14mm 18mm}@media print{body{padding:0}.noprint{display:none}}</style></head><body><div class=\"doc\">"+docHtml(s)+"</div><p class=\"noprint\" style=\"text-align:center;color:#5A6B7D;font:13px sans-serif\">To save as PDF, press Ctrl+P (Cmd+P on Mac) and choose Save as PDF.</p></body></html>";
+}
+
+
+// Generator state: always starts blank
+var dlg=document.getElementById("page"),cur=null,dirty=false,ALLOWED=["image/png","image/jpeg","image/webp","image/gif"];
+var F={title:"f-title",purpose:"f-purpose",systems:"f-sys",owner:"f-owner",version:"f-ver",type:"f-type"};
+function msg(t){document.getElementById("msg").textContent=t;}
+function prev(){document.getElementById("prev").innerHTML=docHtml(cur);}
+function save(){dirty=true;}
+function later(){dirty=true;}
+function blank(){cur={id:"generator",type:"adhoc",task:"",title:"",purpose:"",systems:"",owner:"",version:"1.0",steps:[],date:""};
+  Object.keys(F).forEach(function(k){document.getElementById(F[k]).value=cur[k];});
+  document.getElementById("ai-notes").value="";document.getElementById("ai-mode").value="new";aiSay("");document.getElementById("ai-prog").hidden=true;
+  dirty=false;stepsUI();prev();msg("");}
+Object.keys(F).forEach(function(k){document.getElementById(F[k]).addEventListener("input",function(e){cur[k]=e.target.value;prev();later();});});
+document.getElementById("del").addEventListener("click",function(){
+  if(dirty&&!confirm("Clear everything and start a new blank SOP? This can\u2019t be undone."))return;blank();});
+window.addEventListener("beforeunload",function(e){if(dirty){e.preventDefault();e.returnValue="";}});
+var lastStep=null;
+function loadImage(file,cb){
+  if(ALLOWED.indexOf(file.type)<0||file.size>10e6){msg("Use a PNG, JPG, WebP, or GIF under 10 MB.");cb(null);return;}
+  var r=new FileReader();
+  r.onerror=function(){msg("That image couldn\u2019t be read.");cb(null);};
+  r.onload=function(){var im=new Image();
+    im.onload=function(){var sc=Math.min(1,1000/im.width),cv=document.createElement("canvas"),cx;
+      cv.width=Math.round(im.width*sc);cv.height=Math.round(im.height*sc);cx=cv.getContext("2d");
+      cx.fillStyle="#fff";cx.fillRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height);
+      cb(cv.toDataURL("image/jpeg",0.72));};
+    im.onerror=function(){msg("That image couldn\u2019t be read.");cb(null);};im.src=r.result;};
+  r.readAsDataURL(file);
+}
+function addPhotos(files,target){
+  var list=Array.prototype.slice.call(files),added=0,first=-1;
+  (function next(){
+    var f=list.shift();
+    if(!f){stepsUI();prev();save();
+      if(added){msg("Added "+added+" photo"+(added>1?"s":"")+". Now give each step a headline and instructions.");
+        if(first>=0){var inp=document.querySelectorAll("#steps .step")[first];if(inp){var h=inp.querySelector("input[type=text]");if(h)h.focus();}}}
+      return;}
+    loadImage(f,function(d){
+      if(d){added++;
+        if(target>=0&&cur.steps[target]&&!cur.steps[target].img){cur.steps[target].img=d;if(first<0)first=target;target=-1;}
+        else{cur.steps.push({head:"",text:"",img:d});if(first<0)first=cur.steps.length-1;}}
+      next();});
+  })();
+}
+function stepsUI(){
+  var box=document.getElementById("steps");box.textContent="";
+  cur.steps.forEach(function(s,i){
+    var d=el("div","step");d.appendChild(el("small","","STEP "+(i+1)));
+    d.addEventListener("focusin",function(){lastStep=i;});
+    var h=el("input");h.type="text";h.maxLength=120;h.placeholder="Headline (example: Open the report)";h.value=s.head;h.setAttribute("aria-label","Step "+(i+1)+" headline");
+    h.addEventListener("input",function(){s.head=h.value;prev();later();});
+    var t=el("textarea");t.maxLength=1500;t.placeholder="Instructions";t.value=s.text;t.setAttribute("aria-label","Step "+(i+1)+" instructions");
+    t.addEventListener("input",function(){s.text=t.value;prev();later();});
+    d.appendChild(h);d.appendChild(t);
+    if(s.img&&s.img.indexOf("data:image/")===0){var th=el("img","thumb");th.src=s.img;th.alt="Screenshot for step "+(i+1);d.appendChild(th);}
+    var f=el("input");f.type="file";f.hidden=true;f.accept="image/png,image/jpeg,image/webp,image/gif";f.setAttribute("aria-label","Step "+(i+1)+" screenshot");
+    f.addEventListener("change",function(){var file=f.files[0];f.value="";if(!file)return;
+      loadImage(file,function(x){if(x){s.img=x;stepsUI();prev();save();}});});
+    var row=el("div","srow");
+    function btn(txt,fn,dis){var b=el("button","btn alt sm",txt);b.type="button";if(dis)b.disabled=true;b.addEventListener("click",fn);row.appendChild(b);return b;}
+    btn(s.img?"Replace photo":"Add photo",function(){f.click();});
+    if(s.img)btn("Remove photo",function(){s.img="";stepsUI();prev();save();});
+    btn("\u2191 Up",function(){var x=cur.steps[i];cur.steps[i]=cur.steps[i-1];cur.steps[i-1]=x;stepsUI();prev();later();},i===0);
+    btn("\u2193 Down",function(){var x=cur.steps[i];cur.steps[i]=cur.steps[i+1];cur.steps[i+1]=x;stepsUI();prev();later();},i===cur.steps.length-1);
+    btn("Remove step",function(){cur.steps.splice(i,1);stepsUI();prev();later();});
+    d.appendChild(f);d.appendChild(row);box.appendChild(d);
+  });
+}
+// Easy photo input: drop, paste, or click
+var dropEl=document.getElementById("drop"),multi=document.getElementById("multi");
+dropEl.addEventListener("click",function(){multi.click();});
+dropEl.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();multi.click();}});
+multi.addEventListener("change",function(){if(cur&&multi.files.length)addPhotos(multi.files,-1);multi.value="";});
+dlg.addEventListener("dragover",function(e){if(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types,"Files")>=0){e.preventDefault();dropEl.classList.add("over");}});
+dlg.addEventListener("dragleave",function(e){if(e.target===dropEl||e.target===dlg)dropEl.classList.remove("over");});
+dlg.addEventListener("drop",function(e){dropEl.classList.remove("over");if(!cur||!e.dataTransfer||!e.dataTransfer.files.length)return;e.preventDefault();addPhotos(e.dataTransfer.files,-1);});
+dlg.addEventListener("paste",function(e){
+  var items=(e.clipboardData&&e.clipboardData.items)||[],files=[];
+  for(var i=0;i<items.length;i++)if(items[i].kind==="file"&&items[i].type.indexOf("image/")===0)files.push(items[i].getAsFile());
+  if(!files.length||!cur)return;e.preventDefault();
+  addPhotos(files,lastStep!==null&&lastStep<cur.steps.length?lastStep:-1);});
+document.getElementById("add-step").addEventListener("click",function(){cur.steps.push({head:"",text:"",img:""});stepsUI();prev();later();});
+function blobUrl(){return URL.createObjectURL(new Blob([docFile(cur)],{type:"text/html"}));}
+document.getElementById("dl").addEventListener("click",function(){
+  var name=(cur.title||cur.task).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60)||"sop";
+  var a=document.createElement("a");a.href=blobUrl();a.download=name+"-sop.html";document.body.appendChild(a);a.click();a.remove();msg("Downloaded "+name+"-sop.html");});
+document.getElementById("pv").addEventListener("click",function(){
+  var w=window.open(blobUrl(),"_blank");if(!w)msg("Allow pop-ups to open the print view, or use Download.");});
+
+
+// ---------- AI drafting: in-browser (WebLLM) | local llama.cpp | built-in sample ----------
+var WEBLLM_URL="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.83/+esm";
+var WMODELS={small:{id:"Qwen2.5-1.5B-Instruct-q4f16_1-MLC",size:"about 1 GB"},big:{id:"Qwen2.5-3B-Instruct-q4f16_1-MLC",size:"about 2 GB"}};
+var AI={busy:false,mod:null,web:null,webId:null,gpu:null,stopFlag:false};
+var AI_SCHEMA={type:"object",additionalProperties:false,required:["purpose","systems","steps"],properties:{
+  purpose:{type:"string"},systems:{type:"string"},
+  steps:{type:"array",items:{type:"object",additionalProperties:false,required:["head","text"],properties:{head:{type:"string"},text:{type:"string"}}}}}};
+var AI_SYS="You are a technical writer for an investment operations team. You write Standard Operating Procedures (SOPs) for structured notes processing, data verification, reporting platforms, ticketing and exception handling.\n"+
+"Rules:\n- Write in plain, direct, imperative language (\"Open the report\", \"Confirm the maturity date matches\").\n"+
+"- One action or one check per step. Each step has a short headline (under 8 words) and instructions of 1 to 4 sentences.\n"+
+"- Use ONLY facts, systems, tools and names given to you. Never invent system names, thresholds, deadlines, people or numbers. Where a needed detail is missing, write a placeholder like [CONFIRM: report name].\n"+
+"- Include a verification step and an escalation step (who to tell if something does not match) where it makes sense. If no escalation contact is given, use \"the Investment Operations Manager\".\n"+
+"- Never include client names, account numbers or SSNs.\n"+
+"- 'purpose' is 1 to 3 sentences on why the task exists. 'systems' is a short comma-separated list of systems mentioned.\n"+
+"- Respond with JSON only, matching the requested schema.";
+function $(i){return document.getElementById(i);}
+function aiSay(t){$("ai-msg").textContent=t;}
+function aiStatus(ok,t){var s=$("ai-st");s.className="st"+(ok===true?" ok":ok===false?" no":"");s.textContent=t;}
+function aiEngine(){return $("ai-engine").value;}
+function wCached(){return read("opsdash:wllm:"+WMODELS[$("ai-wm").value].id,false)===true;}
+function aiRefresh(){
+  var e=aiEngine(),go=$("ai-go");
+  $("ai-web").hidden=e!=="browser";
+  write("opsdash:aiengine",e);
+  if(e==="browser"){
+    var m=WMODELS[$("ai-wm").value];
+    if(AI.gpu===false){aiStatus(false,"\u25CB This browser can\u2019t run it");}
+    else if(AI.web&&AI.webId===m.id){aiStatus(true,"\u25CF Model loaded");}
+    else if(wCached()){aiStatus(true,"\u25CF Model saved on this device");}
+    else aiStatus(null,"Needs a one-time download ("+m.size+")");
+    $("ai-webnote").textContent=wCached()||(AI.web&&AI.webId===m.id)
+      ?"Runs on your graphics card. Your text never leaves this device."
+      :"First use downloads the AI model ("+m.size+") and saves it in this browser. It starts only when you click the button. Your text never leaves this device.";
+    go.textContent=(AI.web&&AI.webId===m.id)||wCached()?"Draft SOP":"Download model ("+m.size+") & draft";
+  }
+  else{go.textContent="Insert sample draft";aiStatus(true,"\u25CF Built-in example, no AI");}
+}
+async function detectGpu(){
+  try{AI.gpu=!!(navigator.gpu&&await navigator.gpu.requestAdapter());}catch(e){AI.gpu=false;}
+  if(!AI.gpu){var o=$("ai-engine").querySelector("option[value=browser]");o.disabled=true;o.textContent="In my browser (not available on this device)";
+    if(aiEngine()==="browser")$("ai-engine").value="sample";}
+  aiRefresh();
+}
+function aiBuild(notes,mode){
+  var lines=["Task: "+(cur.title||"(not named yet)"),"Frequency: "+NAMES[cur.type],"Owner or role: "+(cur.owner||"Investment Operations"),"SOP title: "+(cur.title||"(not named yet)")];
+  if(cur.systems)lines.push("Systems already listed: "+cur.systems);
+  if(cur.purpose)lines.push("Purpose already written: "+cur.purpose);
+  var u=lines.join("\n")+"\n\nAuthor's notes:\n"+(notes||"(none given; draft a reasonable skeleton from the task name and mark every missing detail with [CONFIRM: ...])");
+  if(mode==="fill"){
+    var hs=cur.steps.map(function(s,i){return (i+1)+". "+(s.head||"(no headline yet)")+(s.text?" -- existing text: "+s.text:"");});
+    u+="\n\nThe author already has these "+cur.steps.length+" steps (each has a screenshot you cannot see). Return EXACTLY "+cur.steps.length+" steps, in this same order, writing the instructions for each. Keep or improve each headline:\n"+hs.join("\n");
+  }
+  return [{role:"system",content:AI_SYS},{role:"user",content:u}];
+}
+function aiParse(txt){
+  txt=txt.replace(/<think>[\s\S]*?<\/think>/g,"").trim();
+  try{return JSON.parse(txt);}catch(e){}
+  var a=txt.indexOf("{"),b=txt.lastIndexOf("}");
+  if(a>=0&&b>a){try{return JSON.parse(txt.slice(a,b+1));}catch(e){}}
+  return null;
+}
+function aiApply(d,mode,over){
+  var cl=function(s,n){return String(s==null?"":s).replace(/\s+$/,"").slice(0,n);};
+  if(d.purpose&&(over||!cur.purpose))cur.purpose=cl(d.purpose,600);
+  if(d.systems&&(over||!cur.systems))cur.systems=cl(d.systems,160);
+  var st=Array.isArray(d.steps)?d.steps:[];
+  if(mode==="fill"){
+    st.forEach(function(s,i){
+      if(i<cur.steps.length){var c=cur.steps[i];
+        if(s.head&&(over||!c.head))c.head=cl(s.head,120);
+        if(s.text&&(over||!c.text))c.text=cl(s.text,1500);}
+      else cur.steps.push({head:cl(s.head,120),text:cl(s.text,1500),img:""});});
+  }else st.forEach(function(s){cur.steps.push({head:cl(s.head,120),text:cl(s.text,1500),img:""});});
+  Object.keys(F).forEach(function(k){$(F[k]).value=cur[k]||"";});
+  stepsUI();prev();save();
+}
+function aiSample(){
+  return {purpose:"Explain why \u201C"+cur.task+"\u201D is done and who relies on the result. [CONFIRM: add the specific purpose]",
+    systems:"[CONFIRM: systems used]",
+    steps:[
+    {head:"Gather what you need",text:"Confirm you can open the systems listed above and have today\u2019s source report. [CONFIRM: report name]"},
+    {head:"Open the source data",text:"Open the first source and locate the items to check. Note the date range so both sources cover the same period."},
+    {head:"Compare against the second source",text:"Check each key field (for example coupon, barrier level and maturity date) in both places. Write down any difference you find."},
+    {head:"Record the result",text:"Mark the task complete on the dashboard. Log any difference with its internal reference (ticket or note ID, never client names)."},
+    {head:"Escalate exceptions",text:"Send anything that does not match to the Investment Operations Manager using the Exceptions tab, with a priority and the action needed."},
+    {head:"Note improvements",text:"Write down any step that could be documented better or automated, and add it to the automation backlog."}]};
+}
+async function webLoad(id){
+  if(AI.web&&AI.webId===id)return;
+  var pg=$("ai-prog");pg.hidden=false;pg.value=0;
+  var cb=function(p){pg.value=Math.round((p&&p.progress||0)*100);aiSay(((p&&p.text)||"Loading model")+"");};
+  aiSay("Loading the AI engine\u2026");
+  if(!AI.mod)AI.mod=await import(WEBLLM_URL);
+  var list=(AI.mod.prebuiltAppConfig&&AI.mod.prebuiltAppConfig.model_list)||[];
+  if(!list.some(function(m){return m.model_id===id;}))throw new Error("That model isn\u2019t available in this engine version.");
+  if(!AI.web)AI.web=await AI.mod.CreateMLCEngine(id,{initProgressCallback:cb});
+  else await AI.web.reload(id);
+  AI.webId=id;write("opsdash:wllm:"+id,true);pg.hidden=true;
+}
+async function genWeb(msgs,temp,t0){
+  var acc="";
+  async function run(withSchema){
+    var req={messages:msgs,stream:true,temperature:temp,top_p:0.9,max_tokens:1500};
+    if(withSchema)req.response_format={type:"json_object",schema:JSON.stringify(AI_SCHEMA)};
+    var stream=await AI.web.chat.completions.create(req);
+    for await(var ch of stream){
+      var t=ch.choices&&ch.choices[0]&&ch.choices[0].delta&&ch.choices[0].delta.content;
+      if(t){acc+=t;
+        aiSay("Drafting on your device\u2026 "+acc.length+" characters, "+Math.round((Date.now()-t0)/1000)+"s");}
+      if(AI.stopFlag)break;
+    }
+  }
+  try{await run(true);}catch(e){
+    if(AI.stopFlag)throw e;
+    acc="";aiSay("Retrying in a simpler mode\u2026");await run(false);
+  }
+  return acc;
+}
+async function aiDraft(){
+  if(AI.busy||!cur)return;
+  var eng=aiEngine(),notes=$("ai-notes").value.trim(),mode=$("ai-mode").value,over=$("ai-over").checked;
+  var target=cur,go=$("ai-go"),stop=$("ai-stop");
+  if(eng==="sample"){aiApply(aiSample(),"new",over);aiSay("Sample draft added. This is a built-in example, not AI output. Choose \u201CIn my browser\u201D for a real AI draft.");return;}
+  if(mode==="fill"&&!cur.steps.length){aiSay("You have no steps yet. Add steps (or screenshots) first, or choose \u201CWrite new steps\u201D.");return;}
+  var temp=parseFloat($("ai-temp").value);if(!(temp>=0&&temp<=1.5))temp=0.3;
+  AI.busy=true;AI.stopFlag=false;go.disabled=true;stop.hidden=false;
+  var t0=Date.now(),acc="";
+  try{
+    if(eng==="browser"){
+      if(AI.gpu===false)throw new Error("WebGPU isn\u2019t available in this browser. Try desktop Chrome or Edge, or use the sample draft.");
+      await webLoad(WMODELS[$("ai-wm").value].id);aiRefresh();
+      aiSay("Drafting on your device\u2026");
+      acc=await genWeb(aiBuild(notes.slice(0,2500),mode),temp,t0);
+    }
+    if(cur!==target)return;
+    var d=aiParse(acc);
+    if(!d){aiSay("The model\u2019s answer couldn\u2019t be read as an SOP. Try again, or add more detail to your notes.");return;}
+    aiApply(d,mode,over);
+    aiSay("Draft added ("+(d.steps?d.steps.length:0)+" steps). Review everything, especially any [CONFIRM: \u2026] placeholders, before using it.");
+  }catch(e){
+    if(AI.stopFlag){aiSay("Stopped.");
+      var dd=acc&&aiParse(acc);if(dd&&cur===target){aiApply(dd,mode,over);aiSay("Stopped. Added what was finished.");}}
+    else{aiSay("Couldn\u2019t draft: "+(e&&e.message?e.message:e)+(eng==="browser"?" You can use the sample draft instead.":""));$("ai-prog").hidden=true;}
+  }finally{AI.busy=false;go.disabled=false;stop.hidden=true;}
+}
+$("ai-go").addEventListener("click",aiDraft);
+$("ai-stop").addEventListener("click",function(){AI.stopFlag=true;try{if(AI.web&&AI.web.interruptGenerate)AI.web.interruptGenerate();}catch(e){}});
+$("ai-engine").addEventListener("change",function(){aiSay("");aiRefresh();});
+$("ai-wm").addEventListener("change",function(){write("opsdash:aiwm",$("ai-wm").value);aiRefresh();});
+(function init(){
+  var sv=read("opsdash:aiengine","sample");$("ai-engine").value=(sv==="browser"||sv==="sample")?sv:"sample";
+  var wm=read("opsdash:aiwm","small");$("ai-wm").value=WMODELS[wm]?wm:"small";
+    aiRefresh();detectGpu();
+})();
+
+blank();
+</script>
+</body>
+</html>
